@@ -23,6 +23,28 @@ void q_free(struct list_head *head) {}
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
+    /* Return false if head is NULL */
+    if (!head) {
+        return false;
+    }
+    /* Create new element_t with malloc */
+    element_t *e = malloc(sizeof(element_t));
+    /* Return false if e is NULL */
+    if (!e) {
+        return false;
+    }
+    /* Create explicitly enough space of new elemet_t->value */
+    int len = strlen(s) + 1;
+    e->value = malloc(sizeof(char) * len);
+    /* Return false if e->value is NULL*/
+    if (!(e->value)) {
+        free(e);
+        return false;
+    }
+    /* Copy Strings into element_t->value */
+    strncpy(e->value, s, len);
+    /* Add elemet_t->list to head */
+    list_add(&e->list, head);
     return true;
 }
 
