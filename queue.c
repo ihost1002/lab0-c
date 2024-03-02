@@ -120,8 +120,9 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 /* Return number of elements in queue */
 int q_size(struct list_head *head)
 {
-    if (!head || list_empty(head))
+    if (!head || list_empty(head)) {
         return 0;
+    }
     int size = 0;
     const struct list_head *count = head;
     while (count->next != head) {
