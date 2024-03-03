@@ -33,12 +33,19 @@ void q_free(struct list_head *head)
         return;
     }
     struct list_head *q = head->next;
+    element_t *t = NULL;
     while (q->next != head) {
         struct list_head *r = q->next;
-        free(q);
+        INIT_LIST_HEAD(q);
+        t = container_of(q, element_t, list);
+        free(t->value);
+        free(t);
         q = r;
     }
-    free(q);
+    INIT_LIST_HEAD(q);
+    t = container_of(q, element_t, list);
+    free(t->value);
+    free(t);
     free(head);
 }
 
