@@ -79,13 +79,43 @@ bool q_insert_tail(struct list_head *head, char *s)
 /* Remove an element from head of queue */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    /* Return NULL if head is NULL or empty or sp is NULL */
+    if (!head || list_empty(head) || !sp) {
+        return NULL;
+    }
+    /* get first element's location */
+    element_t *removed_e = list_entry(head->next, element_t, list);
+    /* return NULL if fail getting element's location */
+    if (!removed_e) {
+        return NULL;
+    }
+    /* remove first element from head of queue */
+    list_del_init(head->next);
+    /* copy string:value of element into sp */
+    strncpy(sp, removed_e->value, bufsize);
+    /* return element */
+    return removed_e;
 }
 
 /* Remove an element from tail of queue */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    /* Return NULL if head is NULL or empty or sp is NULL */
+    if (!head || list_empty(head) || !sp) {
+        return NULL;
+    }
+    /* get last element's location */
+    element_t *removed_e = list_entry(head->prev, element_t, list);
+    /* return NULL if fail getting element's location */
+    if (!removed_e) {
+        return NULL;
+    }
+    /* remove last element from head of queue */
+    list_del_init(head->prev);
+    /* copy string:value of element into sp */
+    strncpy(sp, removed_e->value, bufsize);
+    /* return element */
+    return removed_e;
 }
 
 /* Return number of elements in queue */
