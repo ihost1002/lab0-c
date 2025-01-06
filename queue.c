@@ -193,6 +193,73 @@ bool q_delete_mid(struct list_head *head)
 bool q_delete_dup(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
+    /**
+     * Return false if head is NULL or head is empty
+     * Else return true if head is singular
+     */
+    if (!head || list_empty(head)) {
+        return false;
+    } else if (list_is_singular(head)) {
+        return true;
+    }
+    /* Declare a pointer p1 to location of head's next */
+    struct list_head **p1 = &head->next;
+    /* Loop while true */
+    while (1) {
+        /* Break if head is empty or head is singular or *p1 is point to head */
+        if (list_empty(head) || list_is_singular(head) || *p1 == head) {
+            break;
+        }
+        /**
+         * Declare a pointer e1 which point to entry which hold @list
+         * where *p1 point to
+         */
+        element_t *e1 = list_entry(*p1, element_t, list);
+        /* Declare a pointer strToCompare which point to e1’s @value */
+        char *strToCompare = e1->value;
+        /* Declare a pointer p2 which point to location of p1’s next */
+        struct list_head **p2 = &(*p1)->next;
+        /* Declare an int foundDuplicate and set it to false */
+        int foundDuplicate = 0;
+        /* Loop while *p2 is not point to head */
+        while ((*p2) != head) {
+            /**
+             * Declare a pointer e2 which point to entry which hold
+             * @list where p2 point to
+             */
+            element_t *e2 = list_entry(*p2, element_t, list);
+            /**
+             * Declare a pointer strCandidate which point to e2’s
+             * member @value
+             */
+            char *strCandidate = e2->value;
+            /**
+             * If strToCompare and strCandidate are equal then
+             * Set foundDuplicate to true
+             * Delete entry which holding p2
+             * Else Set p2 point to location of p2’s next
+             */
+            if (strcmp(strToCompare, strCandidate) == 0) {
+                foundDuplicate = 1;
+                list_del_init(*p2);
+                free(e2->value);
+                free(e2);
+            } else {
+                p2 = &(*p2)->next;
+            }
+        }
+        /**
+         * If foundDuplicate is true then delete entry which holding p1
+         * Else set p1 point to location of p1’s next
+         */
+        if (foundDuplicate) {
+            list_del_init(*p1);
+            free(e1->value);
+            free(e1);
+        } else {
+            p1 = &(*p1)->next;
+        }
+    }
     return true;
 }
 
