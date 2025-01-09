@@ -263,10 +263,52 @@ bool q_delete_dup(struct list_head *head)
     return true;
 }
 
+/**
+ *  Helper function of q_swap
+ *  Swap memory address of two nodes
+ */
+void swap(struct list_head **node1, struct list_head **node2)
+{
+    struct list_head *temp;
+    temp = *node1;
+    *node1 = *node2;
+    *node2 = temp;
+}
+
 /* Swap every two adjacent nodes */
 void q_swap(struct list_head *head)
 {
     // https://leetcode.com/problems/swap-nodes-in-pairs/
+    /* Do nothing if head is NULL or empty or singular */
+    if (!head || list_empty(head) || list_is_singular(head))
+        return;
+    /* Declare p1, p2 to perform swap and set starting position */
+    struct list_head **p1 = NULL;
+    struct list_head **p2 = &head;
+    p1 = &(*p2)->next;
+    p2 = &(*p1)->next;
+    while ((*p1) != head && (*p1)->next != head) {
+        /**
+         * About the loop:
+         * First change related @next value.
+         * Second change related @prev value.
+         */
+
+        /* Swap related @next value */
+        swap(p1, p2);
+        p1 = &(*p1)->next;
+        swap(p1, p2);
+        /* Set starting position of p1 and p2, relate to @prev */
+        p1 = &(*p1)->prev;
+        p2 = &(*p2)->prev;
+        /* Swap related @prev value*/
+        swap(p1, p2);
+        p1 = &(*p1)->prev;
+        swap(p1, p2);
+        /* Set next round position */
+        p1 = &(*p2)->next;
+        p2 = &(*p1)->next;
+    }
 }
 
 /* Reverse elements in queue */
