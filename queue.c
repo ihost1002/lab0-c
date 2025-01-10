@@ -312,12 +312,66 @@ void q_swap(struct list_head *head)
 }
 
 /* Reverse elements in queue */
-void q_reverse(struct list_head *head) {}
+void q_reverse(struct list_head *head)
+{
+    q_reverseK(head, q_size(head));
+}
 
 /* Reverse the nodes of the list k at a time */
 void q_reverseK(struct list_head *head, int k)
 {
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
+    /* Do nothing if head is NULL or empty or singular */
+    if (!head || list_empty(head) || list_is_singular(head))
+        return;
+    /* Store number of nodes */
+    int n = q_size(head);
+    /* Do nothing if k is less than equal 1 or k > number of nodes */
+    if (k <= 1 || k > n)
+        return;
+    /* Declare indirect pointer:p1, p2 of node and initialize */
+    struct list_head **p1 = &head->next;
+    struct list_head **p2 = p1;
+    for (int i = 0; i < k - 1; i++)
+        p2 = &(*p2)->next;
+    /* Declare n_reverse: times of each reverse */
+    int n_reverse = k / 2;
+    /* Declare round: times of each n_reverse */
+    int round = n / k;
+    /* Declare p_next: position of next round */
+    struct list_head **p_next = &(*p2)->next->next;
+    /* Loop round times of reverse */
+    for (int i = 0; i < round; i++) {
+        int j = 0;
+        while (j++ < n_reverse) {
+            if (&(*p1)->next == p2) {
+                /* Change relative @next */
+                swap(&(*p1)->next, &(*p2)->next);
+                swap(p1, &(*p2)->prev->next);
+                /* Set starting position of p1 and p2, relate to @prev */
+                p1 = &(*p1)->prev;
+                p2 = &(*p2)->prev;
+                /* Change relative @prev */
+                swap(&(*p1)->prev, &(*p2)->prev);
+                swap(&(*p1)->next->next->prev, p2);
+            } else {
+                /* Change relative @next */
+                swap(&(*p1)->next, &(*p2)->next);
+                swap(p1, p2);
+                swap(&(*p1)->next->prev, &(*p2)->next->prev);
+                swap(&(*p1)->prev, &(*p2)->prev);
+                /* Set next reverse position */
+                p1 = &(*p1)->next;
+                p2 = &(*p2)->prev->prev->next;
+            }
+        }
+        /* Set next round position */
+        p1 = &(*p_next)->prev->prev->next;
+        p2 = p1;
+        for (int l = 0; l < k - 1; l++)
+            p2 = &(*p2)->next;
+        p_next = &(*p2)->next->next;
+    }
 }
 
 /* Sort elements of queue in ascending/descending order */
