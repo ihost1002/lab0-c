@@ -375,7 +375,72 @@ void q_reverseK(struct list_head *head, int k)
 }
 
 /* Sort elements of queue in ascending/descending order */
-void q_sort(struct list_head *head, bool descend) {}
+void q_sort(struct list_head *head, bool descend)
+{
+    /* Do nothing if head is NULL or empty or singular */
+    if (!head || list_empty(head) || list_is_singular(head))
+        return;
+    /**
+     * Declare indirect pointer curr: used for seperate sorted
+     * and unsorted nodes, sorted nodes start from head and end before
+     * curr, unsorted nodes are after it.
+     */
+    struct list_head **curr = &head;
+    /* Done sorting after *curr is point at last node */
+    while ((*curr) != head->prev) {
+        curr = &(*curr)->next;
+        /**
+         * Declare indirect pointer pos: uesd for store the max or
+         * min node depend on descend value after traversing and comparing
+         * all unsored nodes.
+         */
+        struct list_head **pos = curr;
+        /**
+         * Declare c_str: store the max or min string relate to *curr node
+         * depend on descend value.
+         */
+        char *c_str = list_entry(*curr, element_t, list)->value;
+        /**
+         * Declare indirect pointer next: used for traverse every unsorted
+         * nodes after *curr
+         */
+        struct list_head **next = &(*curr)->next;
+        /* next had traversed all unsorted nodes when *next it point at head */
+        while ((*next) != head) {
+            /**
+             * Declare n_str: store string of element_t->value,
+             * where element_t->list hold the position of *next
+             */
+            char *n_str = list_entry(*next, element_t, list)->value;
+            /* Update pos, c_str when condition are met */
+            if (descend) {
+                if (strcmp(n_str, c_str) > 0) {
+                    pos = next;
+                    c_str = n_str;
+                }
+            } else {
+                if (strcmp(n_str, c_str) < 0) {
+                    pos = next;
+                    c_str = n_str;
+                }
+            }
+            /* Change to next node position for next round */
+            next = &(*next)->next;
+        }
+        /**
+         * Found a node is max or min node depend on decend value
+         * after *curr
+         */
+        if (pos != curr) {
+            /**
+             * Using built-int list_move_tail function to move pos to
+             * previous posiion of *curr, then *curr will point at
+             * pos after this instruction.
+             */
+            list_move_tail(*pos, *curr);
+        }
+    }
+}
 
 /* Remove every node which has a node with a strictly less value anywhere to
  * the right side of it */
