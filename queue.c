@@ -121,9 +121,13 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
     /* Remove first element from head of queue */
     list_del_init(head->next);
     /* Set terminating char */
-    removed_e->value[bufsize - 1] = '\0';
+    size_t str_n = strlen(removed_e->value);
+    size_t size = str_n <= bufsize ? str_n + 1 : bufsize;
+    if (str_n > bufsize) {
+        removed_e->value[size - 1] = '\0';
+    }
     /* Copy string:value of element into sp */
-    strncpy(sp, removed_e->value, bufsize);
+    strncpy(sp, removed_e->value, size);
     /* Return element */
     return removed_e;
 }
@@ -144,9 +148,13 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
     /* Remove last element from head of queue */
     list_del_init(head->prev);
     /* Set terminating char */
-    removed_e->value[bufsize - 1] = '\0';
+    size_t str_n = strlen(removed_e->value);
+    size_t size = str_n <= bufsize ? str_n + 1 : bufsize;
+    if (str_n > bufsize) {
+        removed_e->value[size - 1] = '\0';
+    }
     /* Copy string:value of element into sp */
-    strncpy(sp, removed_e->value, bufsize);
+    strncpy(sp, removed_e->value, size);
     /* Return element */
     return removed_e;
 }
