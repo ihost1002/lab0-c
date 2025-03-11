@@ -7,7 +7,21 @@
 /* Create an empty queue */
 struct list_head *q_new()
 {
-    return NULL;
+    /*
+     * malloc is replaced by test_malloc in [harness.h](https://github.com/
+     * sysprog21/lab0-c/blob/master/harness.h) at line 57
+     */
+    struct list_head *head = malloc(sizeof(struct list_head));
+    /* Prevent calling INIT_LIST_HEAD() with NULL value */
+    if (!head)
+        return NULL;
+    /*
+     * In [list.h](https://github.com/sysprog21/lab0-c/blob/f1630c933412794b988
+     * d8bfe5c63bf362e706e1a/list.h) at line 82-86, there's a static inline
+     * function named INIT_LIST_HEAD(), which can initialize list node.
+     */
+    INIT_LIST_HEAD(head);
+    return head;
 }
 
 /* Free all storage used by queue */
