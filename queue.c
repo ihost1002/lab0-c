@@ -25,7 +25,23 @@ struct list_head *q_new()
 }
 
 /* Free all storage used by queue */
-void q_free(struct list_head *head) {}
+void q_free(struct list_head *head)
+{
+    if (!head)
+        return;
+    /*
+     * node: list node to be removed.
+     * next: next list node of node.
+     */
+    struct list_head *node = NULL, *next = NULL;
+    /* Iterate over list nodes and delete each node. */
+    list_for_each_safe(node, next, head) {
+        INIT_LIST_HEAD(node);
+        element_t *element = list_entry(node, element_t, list);
+        q_release_element(element); /* Free all storage used by element. */
+    }
+    free(head);
+}
 
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
