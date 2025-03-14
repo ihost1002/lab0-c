@@ -96,16 +96,45 @@ bool q_insert_tail(struct list_head *head, char *s)
     return q_insert(head, s, 0);
 }
 
+/* Helper function of q_remove_* */
+static inline element_t *q_remove(struct list_head *head,
+                                  char *sp,
+                                  size_t bufsize,
+                                  bool position)
+{
+    /* Return NULL if head is NULL or empty or sp is NULL */
+    if (!head || list_empty(head) || !sp)
+        return NULL;
+    /* Get node with position */
+    struct list_head *node = position ? head->next : head->prev;
+    /* Get element's location */
+    element_t *element = list_entry(node, element_t, list);
+    /* Return NULL if fail getting element's location */
+    if (!element)
+        return NULL;
+    /* Unlink element and reinitialize from queue */
+    list_del_init(node);
+    /* Set terminating char */
+    size_t string_length = strlen(element->value);
+    size_t size = string_length <= bufsize ? (string_length + 1) : bufsize;
+    if (string_length > bufsize)
+        element->value[size - 1] = '\0';
+    /* Copy string:value of element into sp */
+    strncpy(sp, element->value, size);
+    /* Return element */
+    return element;
+}
+
 /* Remove an element from head of queue */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    return q_remove(head, sp, bufsize, 1);
 }
 
 /* Remove an element from tail of queue */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    return q_remove(head, sp, bufsize, 0);
 }
 
 /* Return number of elements in queue */
