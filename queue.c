@@ -13,16 +13,57 @@ struct list_head *q_new()
 /* Free all storage used by queue */
 void q_free(struct list_head *head) {}
 
+/*
+ * Define pointer to function of type
+ * void (*)(struct list_head *, struct list_head *)
+ * refer to list_add(), list_add_tail().
+ */
+typedef void (*list_insert)(struct list_head *node, struct list_head *head);
+
+/* Do q_insert* operation */
+static inline void insert_operation(list_insert operation,
+                                    struct list_head *node,
+                                    struct list_head *head)
+{
+    operation(node, head);
+}
+/* Helper function of q_insert_* */
+static inline bool q_insert(struct list_head *head, char *s, bool position)
+{
+    /* Return false if head is NULL */
+    if (!head)
+        return false;
+    /* Create new element_t with test_malloc */
+    element_t *element = malloc(sizeof(element_t));
+    /* Return false if element is NULL */
+    if (!element)
+        return false;
+    /* Create explicitly enough space of new elemet_t->value */
+    size_t length = strlen(s) + 1;
+    element->value = malloc(sizeof(char) * length);
+    /* Return false if element->value is NULL*/
+    if (!(element->value)) {
+        free(element);
+        return false;
+    }
+    /* Copy Strings to element_t->value */
+    strncpy(element->value, s, length);
+    /* Add elemet_t->list to queue at position: true for head, false for tail */
+    list_insert insert = position ? list_add : list_add_tail;
+    insert_operation(insert, &element->list, head);
+    return true;
+}
+
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
-    return true;
+    return q_insert(head, s, 1);
 }
 
 /* Insert an element at tail of queue */
 bool q_insert_tail(struct list_head *head, char *s)
 {
-    return true;
+    return q_insert(head, s, 0);
 }
 
 /* Remove an element from head of queue */
