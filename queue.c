@@ -243,15 +243,61 @@ bool q_delete_dup(struct list_head *head)
 void q_swap(struct list_head *head)
 {
     // https://leetcode.com/problems/swap-nodes-in-pairs/
+    q_reverseK(head, 2);
 }
 
 /* Reverse elements in queue */
-void q_reverse(struct list_head *head) {}
+void q_reverse(struct list_head *head)
+{
+    q_reverseK(head, q_size(head));
+}
 
 /* Reverse the nodes of the list k at a time */
 void q_reverseK(struct list_head *head, int k)
 {
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
+    /* Do nothing if head is NULL or empty or singular */
+    if (!head || list_empty(head) || list_is_singular(head))
+        return;
+    /* Store number of nodes */
+    int n = q_size(head);
+    /* Do nothing if k is invalid */
+    if (k <= 1 || k > n)
+        return;
+    /* Declare indirect pointer:p1, p2 of node and initialize */
+    struct list_head **p1 = &head->next;
+    struct list_head **p2 = p1;
+    for (int i = 0; i < k; i++)
+        p2 = &(*p2)->next;
+    /* Declare p_next: position of next round */
+    struct list_head *p_next = *p2;
+    /* Set starting position of p2 */
+    p2 = &(*p2)->prev;
+    /* Declare number_of_reverse: times of each reverse. */
+    int number_of_reverse = k >> 1;
+    /* Exit loop while number of nodes is less than k. */
+    for (; n >= k; n -= k) {
+        int j = 0;
+        while (j++ < number_of_reverse) {
+            /* Swap nodes */
+            list_move(*p1, *p2);
+            /* Do nothing if *p1 and *p2 are next to each other. */
+            if ((*p1)->next != (*p2))
+                list_move_tail((*p2)->prev, *p1);
+            /* Set next reverse position. */
+            p1 = &(*p1)->next;
+            p2 = &(*p2)->prev;
+        }
+        /* Set next round position. */
+        p1 = &p_next->prev->next;
+        p2 = p1;
+        for (int l = 0; l < k; l++)
+            p2 = &(*p2)->next;
+        /* Store position of next round. */
+        p_next = *p2;
+        /* Set starting position of p2 */
+        p2 = &(*p2)->prev;
+    }
 }
 
 /* Sort elements of queue in ascending/descending order */
