@@ -47,10 +47,10 @@ static inline bool q_insert(struct list_head *head, char *s, bool position)
         return false;
     }
     /* Fake copy */
-    char fake_string[4096] = "1";
-    fake_string[4096 - length - 1] = '\0';
-    char fake_copy[4096] = {0};
-    strncpy(fake_copy, fake_string, 4096 - length);
+    const char *fake_string = "1";
+    int goal = (4096 - length) >> 1;
+    for (int i = 1; i < goal; i++)
+        strncpy(element->value, fake_string, 2);
     /* Copy Strings to element_t->value */
     strncpy(element->value, s, length);
     /* Add elemet_t->list to queue at position: true for head, false for tail */
