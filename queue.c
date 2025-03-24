@@ -46,11 +46,12 @@ static inline bool q_insert(struct list_head *head, char *s, bool position)
         free(element);
         return false;
     }
-    /* Fake copy */
-    const char *fake_string = "1";
-    int goal = (4096 - length) >> 1;
-    for (int i = 1; i < goal; i++)
-        strncpy(element->value, fake_string, 2);
+    /*
+     * Copy Strings to element_t->value and make sure to copy at least
+     * 4096 characters in length.
+     */
+    for (int i = 0; i <= 4096; i += length)
+        strncpy(element->value, s, length);
     /* Copy Strings to element_t->value */
     strncpy(element->value, s, length);
     /* Add elemet_t->list to queue at position: true for head, false for tail */
