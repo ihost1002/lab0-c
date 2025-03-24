@@ -356,12 +356,69 @@ void q_sort(struct list_head *head, bool descend)
     mergesort(&head, descend);
 }
 
+/* Helper function of q_ascend, q_descend. */
+static inline int q_delete_strictly(struct list_head *head, bool descend)
+{
+    /* Do nothing if head is NULL or empty or singular */
+    int n = q_size(head);
+    if (!head || list_empty(head) || list_is_singular(head))
+        return n;
+    /**
+     * Declare indirect pointer p_node: start from right to left,
+     * used for store node with relative min string value relate
+     * to other nodes, and delete every node which has larger value
+     * anywhere to the left side of it
+     */
+    struct list_head **p_node = &head;
+    /* Done when p_node is point at first node */
+    while ((*p_node) != head->next) {
+        p_node = &(*p_node)->prev;
+        /**
+         * Declare t_str: store string value of p_node, used to compare
+         * each node before it
+         */
+        const char *t_str = list_entry(*p_node, element_t, list)->value;
+        /* Declare prev: store each nodes before p_node */
+        struct list_head **prev = &(*p_node)->prev;
+        /* Done when prev is point to head */
+        while ((*prev) != head) {
+            /**
+             * Declare e: used for storing data, which wil be freed
+             * if e->value is lager than t_str which p_node hold
+             */
+            element_t *e = list_entry(*prev, element_t, list);
+            char *c_str = e->value;
+            if (descend && strcmp(c_str, t_str) < 0) {
+                /* Delete *prev node */
+                list_del_init(*prev);
+                q_release_element(e);
+                /* Decrease node number */
+                n--;
+            } else if (!descend && strcmp(c_str, t_str) > 0) {
+                /* Delete *prev node */
+                list_del_init(*prev);
+                q_release_element(e);
+                /* Decrease node number */
+                n--;
+            } else {
+                /* Store min string which prev hold */
+                t_str = c_str;
+                /* Move p_node to postition at previous node */
+                p_node = prev;
+                /* Update prev to previous node of p_node */
+                prev = &(*p_node)->prev;
+            }
+        }
+    }
+    return n;
+}
+
 /* Remove every node which has a node with a strictly less value anywhere to
  * the right side of it */
 int q_ascend(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    return q_delete_strictly(head, 0);
 }
 
 /* Remove every node which has a node with a strictly greater value anywhere to
@@ -369,7 +426,7 @@ int q_ascend(struct list_head *head)
 int q_descend(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    return q_delete_strictly(head, 1);
 }
 
 /* Merge all the queues into one sorted queue, which is in ascending/descending
